@@ -16,15 +16,11 @@ The project is developed for **Smart India Hackathon 2026 – Problem Statement 
 **Category:** Software  
 **Team:** PanchTattva
 
-The project context, expected outcomes, and technical approach are based on the team's SIH presentation. fileciteturn1file1L144-L181
-
 ---
 
 ## Project Links
 
 - **Live Deployment:** https://panchtattva-frontend-u9vy.onrender.com/
-
-The deployed URL and repository URL are listed in the SIH project presentation. fileciteturn1file0L118-L134
 
 ---
 
@@ -68,8 +64,6 @@ Change / Impact Assessment
 Evidence-Based Report
 ```
 
-The SIH presentation describes the core concept as an integrated platform combining satellite, DEM, land-use data, watershed prioritization, intervention planning, and interactive 2D/3D visualization. fileciteturn1file1L166-L181
-
 ---
 
 ## Key Features
@@ -92,7 +86,6 @@ The platform is designed to work with relevant geospatial datasets such as:
 - Watershed boundaries
 - Other permitted thematic datasets
 
-The SIH technical approach specifically identifies DEM/terrain, water bodies, land cover/vegetation, and related spatial datasets as inputs. fileciteturn1file0L10-L18
 
 ### 3. Watershed Prioritization
 
@@ -255,8 +248,6 @@ Potential supporting technologies:
 - QGIS
 - Google Earth Engine where permitted and appropriate
 
-The team's SIH presentation identifies React, Leaflet, Cesium, FastAPI, and the geospatial workflow from location input through analysis and intervention identification. fileciteturn1file0L10-L18
-
 ---
 
 ## Data Flow
@@ -283,8 +274,6 @@ The team's SIH presentation identifies React, Leaflet, Cesium, FastAPI, and the 
 10. Generate assessment and report
 ```
 
-This follows the workflow described in the SIH presentation: input location → obtain geospatial layers → watershed analysis → identify suitable interventions → visualize results. fileciteturn1file1L185-L193
-
 ---
 
 ## Expected Benefits
@@ -297,8 +286,6 @@ This follows the workflow described in the SIH presentation: input location → 
 - Spatial and temporal change assessment
 - More structured watershed reporting
 - Scalable workflow for different regions
-
-The SIH presentation specifically identifies faster monitoring, evidence-based decisions, intervention tracking, 2D/3D visualization, and change/impact assessment as target benefits. fileciteturn1file0L80-L96
 
 ---
 
@@ -408,7 +395,7 @@ https://www.icrisat.org/research/geo-spatial-and-big-data-sciences/about
 
 ## 7. Google Earth Engine
 
-Google Earth Engine provides large-scale geospatial processing and access to a large catalog of satellite imagery and geospatial datasets. It can be useful for large-scale change detection and spatial analysis where its use and licensing conditions are appropriate. citeturn0search6turn0search15
+Google Earth Engine provides large-scale geospatial processing and access to a large catalog of satellite imagery and geospatial datasets. It can be useful for large-scale change detection and spatial analysis where its use and licensing conditions are appropriate.
 
 Official source:
 
@@ -418,7 +405,7 @@ https://earthengine.google.com/
 
 ## 8. QGIS 3D Map View
 
-QGIS provides native 3D map visualization, terrain rendering, 3D vector layers, navigation, measurement, and related capabilities. citeturn0search4
+QGIS provides native 3D map visualization, terrain rendering, 3D vector layers, navigation, measurement, and related capabilities.
 
 Official documentation:
 
