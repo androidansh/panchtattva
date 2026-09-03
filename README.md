@@ -188,7 +188,7 @@ Potential report outputs include:
 └────────────────────────────┬───────────────────────────────┘
                              ↓
 ┌────────────────────────────────────────────────────────────┐
-│                    DATA INGESTION                           │
+│                    DATA INGESTION                          │
 │                                                            │
 │ Upload → Validation → Metadata → Geo-Tagging → Processing  │
 └────────────────────────────┬───────────────────────────────┘
@@ -209,7 +209,7 @@ Potential report outputs include:
 ┌────────────────────────────────────────────────────────────┐
 │                    APPLICATION                             │
 │                                                            │
-│ Dashboard | 2D Maps | 3D Terrain | Charts | Reports       │
+│ Dashboard | 2D Maps | 3D Terrain | Charts | Reports        │
 └────────────────────────────┬───────────────────────────────┘
                              ↓
 ┌────────────────────────────────────────────────────────────┐
