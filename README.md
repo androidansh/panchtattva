@@ -22,8 +22,7 @@ The project context, expected outcomes, and technical approach are based on the 
 
 ## Project Links
 
-- **Live Deployment:** https://panchtattva.onrender.com
-- **GitHub Repository:** https://github.com/androidansh/panchtattva
+- **Live Deployment:** https://panchtattva-frontend-u9vy.onrender.com/
 
 The deployed URL and repository URL are listed in the SIH project presentation. fileciteturn1file0L118-L134
 
