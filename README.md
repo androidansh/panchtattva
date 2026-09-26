@@ -20,7 +20,7 @@ The project is developed for **Smart India Hackathon 2026 – Problem Statement 
 
 ## Project Links
 
-- **Live Deployment:** https://panchtattva-frontend-u9vy.onrender.com/
+- **Live Deployment:** https://panchtattva-frontend.vercel.app/
 
 ---
 
