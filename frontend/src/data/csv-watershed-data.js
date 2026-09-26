@@ -2,8 +2,10 @@ import highYearwiseCsv from "./high-priority-yearwise 2008-2025.csv?raw";
 import highQuarterlyCsv from "./high-priority-quarterly-2008-2025.csv?raw";
 import mediumYearwiseCsv from "./medium-priority-yearwise-2008-2025.csv?raw";
 import mediumQuarterlyCsv from "./medium-priority-quarterly-2008-2025.csv?raw";
-import lowYearwiseCsv from "./low-priority-yearwise-2010-2025.csv?raw";
-import lowQuarterlyCsv from "./low-priority-quarterly-2010-2025.csv?raw";
+import lowYearwiseCsv from "./pond-low-yearwise-2021-2025.csv?raw";
+import lowQuarterlyCsv from "./pond-low-quarterly-2021-2025.csv?raw";
+import khatangiLowYearwiseCsv from "./low-priority-yearwise-2010-2025.csv?raw";
+import khatangiLowQuarterlyCsv from "./low-priority-quarterly-2010-2025.csv?raw";
 
 function parseCsv(csv) {
   const [headerLine, ...lines] = csv.trim().split(/\r?\n/);
@@ -31,6 +33,8 @@ function mapYearwiseRows(csv) {
     rainfall: number(row.annual_rainfall_mm),
     ndvi: number(row.ndvi),
     slope: number(row.slope_deg),
+    elevation: number(row.elevation_m),
+    soilLoss: number(row.estimated_soil_loss_t_ha_yr),
     area: null,
   }));
 }
@@ -60,9 +64,15 @@ export const csvWatershedData = {
     quarterly: mapQuarterlyRows(mediumQuarterlyCsv),
   },
   low: {
-    sourceFile: "low-priority-yearwise-2010-2025.csv",
-    quarterlySourceFile: "low-priority-quarterly-2010-2025.csv",
+    sourceFile: "pond-low-yearwise-2021-2025.csv",
+    quarterlySourceFile: "pond-low-quarterly-2021-2025.csv",
     yearly: mapYearwiseRows(lowYearwiseCsv),
     quarterly: mapQuarterlyRows(lowQuarterlyCsv),
+  },
+  lowKhatangi: {
+    sourceFile: "low-priority-yearwise-2010-2025.csv",
+    quarterlySourceFile: "low-priority-quarterly-2010-2025.csv",
+    yearly: mapYearwiseRows(khatangiLowYearwiseCsv),
+    quarterly: mapQuarterlyRows(khatangiLowQuarterlyCsv),
   },
 };

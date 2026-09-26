@@ -4,7 +4,12 @@ import { csvWatershedData } from "./data/csv-watershed-data";
 import GoogleMapsMap from "./GoogleMapsMap";
 import high2dImage from "./assets/high-2d.jpeg";
 import medium2dImage from "./assets/medium-2d.jpeg";
-import low2dImage from "./assets/low-2d.jpeg";
+import low2dImage from "./assets/pond-low-2d.png";
+import khatangiLow2dImage from "./assets/low-2d.jpeg";
+import high3dImage from "./assets/high-3d.jpeg";
+import medium3dImage from "./assets/medium-3d.jpeg";
+import low3dImage from "./assets/pond-low-3d.jpeg";
+import khatangiLow3dImage from "./assets/low-3d.jpeg";
 
 /* =========================================================
    DEMONSTRATION WATERSHED DATA
@@ -23,9 +28,6 @@ const watershedData = {
     runoff: "Moderate–High",
     waterAvailability: "Low",
     area: 42.6,
-    ponds: 2,
-    waterBodies: 1,
-    checkDams: 0,
     score: 86,
     recommendation: "High estimated soil loss combined with relatively high rainfall and 3.53° slope indicates a location requiring active soil and water conservation measures.",
     actions: [
@@ -47,9 +49,6 @@ const watershedData = {
     runoff: "Moderate",
     waterAvailability: "Moderate",
     area: 36.8,
-    ponds: 3,
-    waterBodies: 2,
-    checkDams: 1,
     score: 57,
     recommendation: "Moderate estimated soil loss with good seasonal vegetation conditions suggests preventive and maintenance-focused watershed management.",
     actions: [
@@ -71,9 +70,27 @@ const watershedData = {
     runoff: "Low–Moderate",
     waterAvailability: "Good",
     area: 31.4,
-    ponds: 4,
-    waterBodies: 3,
-    checkDams: 2,
+    score: 28,
+    recommendation: "Lower slope and comparatively lower rainfall indicate lower immediate intervention requirements, while seasonal vegetation response remains strong.",
+    actions: [
+      "Maintain existing watershed structures",
+      "Protect existing vegetation",
+      "Localized rainwater harvesting where required",
+      "Intervene only where localized degradation is detected",
+    ],
+  },
+  lowKhatangi: {
+    name: "Low Priority Watershed",
+    rainfall: 1066,
+    monsoonRainfall: 771,
+    ndvi: 0.33,
+    slope: 1.73,
+    elevationMin: 72,
+    elevationMax: 86,
+    erosion: "Moderate / relatively controlled",
+    runoff: "Low–Moderate",
+    waterAvailability: "Good",
+    area: 31.4,
     score: 28,
     recommendation: "Lower slope and comparatively lower rainfall indicate lower immediate intervention requirements, while seasonal vegetation response remains strong.",
     actions: [
@@ -89,7 +106,7 @@ const priorityZones = [
   {
     key: "high",
     center: [24.815399, 86.842470],
-    radius: 5000,
+    radius: 1000,
     color: "#d94b55",
     label: "High",
     createdYear: 2012,
@@ -97,123 +114,49 @@ const priorityZones = [
   {
     key: "medium",
     center: [24.831280, 86.783349],
-    radius: 5000,
+    radius: 1000,
     color: "#d59a2a",
     label: "Medium",
     createdYear: 2012,
   },
   {
     key: "low",
-    center: [25.064722, 84.771944],
-    radius: 5000,
+    center: [24.905463, 85.376868],
+    radius: 1000,
     color: "#4e9a69",
     label: "Low",
-    createdYear: 2014,
+    createdYear: 2023,
+  },
+  {
+    key: "lowKhatangi",
+    center: [25.064722, 84.771944],
+    radius: 1000,
+    color: "#4e9a69",
+    label: "Low",
+    createdYear: 2023,
   },
 ];
+
+const districtWatersheds = {
+  banka: { label: "Banka", zones: ["high", "medium"] },
+  khatangi: { label: "Khatangi", zones: ["lowKhatangi"] },
+  gaya: { label: "Gaya", zones: ["low"] },
+  jota: { label: "Jota", zones: ["low"] },
+};
 
 const watershed2dImages = {
   high: high2dImage,
   medium: medium2dImage,
   low: low2dImage,
+  lowKhatangi: khatangiLow2dImage,
 };
 
-const thematicZones = [
-  {
-    center: [25.63, 85.18],
-    radius: 9000,
-    rainfall: 1180,
-    ndvi: 0.25,
-    slope: 9,
-    erosion: 85,
-  },
-  {
-    center: [25.56, 85.10],
-    radius: 8000,
-    rainfall: 1040,
-    ndvi: 0.42,
-    slope: 6,
-    erosion: 52,
-  },
-  {
-    center: [25.67, 85.08],
-    radius: 7500,
-    rainfall: 960,
-    ndvi: 0.61,
-    slope: 3,
-    erosion: 25,
-  },
-  {
-    center: [25.60, 85.22],
-    radius: 6500,
-    rainfall: 1100,
-    ndvi: 0.34,
-    slope: 8,
-    erosion: 72,
-  },
-];
-
-const vegetationPoints = [
-  [25.645, 85.15],
-  [25.65, 85.158],
-  [25.64, 85.16],
-  [25.655, 85.175],
-  [25.635, 85.185],
-  // [25.66, 85.185]
-  [24.815399, 86.842470],
-];
-
-/* =========================================================
-   THEMATIC MAP STYLING
-========================================================= */
-
-function getThemeStyle(theme, zone) {
-  if (theme === "rainfall") {
-    return {
-      fill:
-        zone.rainfall >= 1120
-          ? "#8f3038"
-          : zone.rainfall >= 1020
-            ? "#d97706"
-            : "#d9a441",
-      label: `${zone.rainfall} mm`,
-    };
-  }
-
-  if (theme === "ndvi") {
-    return {
-      fill:
-        zone.ndvi < 0.3
-          ? "#c94b55"
-          : zone.ndvi < 0.5
-            ? "#c6a12b"
-            : "#4c9467",
-      label: `NDVI ${zone.ndvi}`,
-    };
-  }
-
-  if (theme === "slope") {
-    return {
-      fill:
-        zone.slope >= 8
-          ? "#c94b55"
-          : zone.slope >= 5
-            ? "#d59a2a"
-            : "#4e9a69",
-      label: `${zone.slope}° slope`,
-    };
-  }
-
-  return {
-    fill:
-      zone.erosion >= 70
-        ? "#8f3038"
-        : zone.erosion >= 40
-          ? "#d59a2a"
-          : "#4e9a69",
-    label: `${zone.erosion}% risk`,
-  };
-}
+const watershed3dImages = {
+  high: high3dImage,
+  medium: medium3dImage,
+  low: low3dImage,
+  lowKhatangi: khatangiLow3dImage,
+};
 
 /* =========================================================
    MINI DEM VISUALIZATION
@@ -439,6 +382,11 @@ function MetricChartModal({ area, metric, mode, onModeChange, onClose }) {
 function App() {
   const [started, setStarted] = useState(false);
   const [stateName, setStateName] = useState("");
+  const [districtName, setDistrictName] = useState("");
+  const [uploadedImagePreview, setUploadedImagePreview] = useState("");
+  const [uploadedImageName, setUploadedImageName] = useState("");
+  const [dashboardSearch, setDashboardSearch] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [level, setLevel] = useState("india");
   const [selectedArea, setSelectedArea] = useState(null);
 
@@ -447,21 +395,14 @@ function App() {
   const [requestedPlace, setRequestedPlace] = useState("Bihar");
   const introTimersRef = useRef([]);
 
-  const [baseMap, setBaseMap] = useState("satellite");
-  const [activeTheme, setActiveTheme] = useState("none");
-
-  const [showContours, setShowContours] = useState(true);
-  const [showPonds, setShowPonds] = useState(true);
-  const [showDrainage, setShowDrainage] = useState(true);
-  const [showVegetation, setShowVegetation] = useState(true);
-  const [showCheckDams, setShowCheckDams] = useState(true);
-  const [showWaterBodies, setShowWaterBodies] = useState(true);
-
+  const [baseMap, setBaseMap] = useState("hybrid");
   const [showTerrain, setShowTerrain] = useState(false);
   const [activeMetric, setActiveMetric] = useState(null);
   const [chartMode, setChartMode] = useState("yearly");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mapOnly, setMapOnly] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [terrainZoom, setTerrainZoom] = useState(1);
+  const [show2dViewer, setShow2dViewer] = useState(false);
+  const [mapZoom, setMapZoom] = useState(1);
 
   const selectedData = selectedArea
     ? {
@@ -469,105 +410,164 @@ function App() {
       ...priorityYearwiseData[selectedArea].yearly.at(-1),
     }
     : null;
+  const selectedZone = selectedArea
+    ? priorityZones.find((zone) => zone.key === selectedArea)
+    : null;
+  const isLowPriority = selectedArea === "low" || selectedArea === "lowKhatangi";
+  const visiblePriorityZones = useMemo(
+    () => {
+      // At the Bihar overview, make every watershed discoverable. The detailed
+      // district view remains scoped to the watershed(s) mapped to that district.
+      if (level === "bihar") return priorityZones;
+      return selectedDistrict
+        ? priorityZones.filter((zone) => districtWatersheds[selectedDistrict].zones.includes(zone.key))
+        : [];
+    },
+    [level, selectedDistrict]
+  );
 
   const currentLocation = useMemo(() => {
-    if (level === "patna") return "Patna Watershed Region";
+    if (level === "patna" && selectedDistrict) return `${districtWatersheds[selectedDistrict].label}, Bihar`;
+    if (level === "patna") return "Bihar Watershed Region";
     if (level === "bihar") return "Bihar";
     return "India";
-  }, [level]);
+  }, [level, selectedDistrict]);
 
   function startExploration() {
-    const raw = stateName.trim();
-    const state = raw.toLowerCase();
+    if (uploadedImagePreview) {
+      introTimersRef.current.forEach(clearTimeout);
+      setStateName("Bihar");
+      setDistrictName("Jota");
+      setRequestedPlace("Jota, Bihar");
+      setSelectedDistrict("jota");
+      setSelectedArea("low");
+      setStarted(true);
+      setLevel("india");
+      setIntroPhase("globe");
+      introTimersRef.current = [
+        setTimeout(() => {
+          setIntroPhase("bihar");
+          setLevel("bihar");
+        }, 2000),
+        setTimeout(() => {
+          setIntroPhase("patna");
+          setLevel("patna");
+        }, 5000),
+        setTimeout(() => setIntroPhase("ready"), 8000),
+      ];
+      return;
+    }
 
-    // Keep the original Bihar demo, while also accepting latitude/longitude.
-    const coordinateMatch = raw.match(
-      /^\\s*(-?\\d+(?:\\.\\d+)?)\\s*[, ]\\s*(-?\\d+(?:\\.\\d+)?)\\s*$/
-    );
+    const state = stateName.trim().toLowerCase();
+    const district = districtName.trim().toLowerCase();
 
-    if (state === "bihar" || coordinateMatch) {
+    if (state === "bihar" && districtWatersheds[district]) {
       // Clear any previous animation timers before starting a new journey.
       introTimersRef.current.forEach(clearTimeout);
 
-      setRequestedPlace(
-        coordinateMatch
-          ? `${Number(coordinateMatch[1]).toFixed(4)}, ${Number(
-              coordinateMatch[2]
-            ).toFixed(4)}`
-          : "Bihar"
-      );
+      setRequestedPlace(`${districtWatersheds[district].label}, Bihar`);
+      setSelectedDistrict(district);
 
       setStarted(true);
       setSelectedArea(null);
       setLevel("india");
       setIntroPhase("globe");
-      setMapOnly(false);
 
       // Deliberately paced: Earth → Bihar → Patna → watershed map.
       introTimersRef.current = [
         // 0–2s: quick scanning-earth beat, same look as the Bihar step.
         setTimeout(() => {
-          setIntroPhase("ready");
-          setLevel("patna");
+          setIntroPhase("bihar");
+          setLevel("bihar");
         }, 2000),
 
         // 2–5s: smooth zoom from India into Bihar.
         setTimeout(() => {
-          setIntroPhase("ready");
+          setIntroPhase("patna");
           setLevel("patna");
         }, 5000),
 
         // 5–8s: Patna zoom finishes, then reveal the watershed dashboard.
         setTimeout(() => {
           setIntroPhase("ready");
-          setMapOnly(false);
         }, 8000),
       ];
 
       return;
     }
 
-    alert(
-      "For this demonstration, please enter Bihar or a latitude, longitude pair."
-    );
+    alert("For this demonstration, enter Bihar and either Banka, Khatangi, Gaya, or Jota.");
+  }
+
+  function searchDashboard() {
+    const searchParts = dashboardSearch.split(",").map((value) => value.trim().toLowerCase()).filter(Boolean);
+    const [stateInput, districtInput] = searchParts.length === 1
+      ? ["bihar", searchParts[0]]
+      : searchParts;
+
+    if (stateInput !== "bihar" || !districtWatersheds[districtInput]) {
+      alert("For this demonstration, search for Banka, Khatangi, Gaya, or Jota.");
+      return;
+    }
+
+    introTimersRef.current.forEach(clearTimeout);
+    introTimersRef.current = [];
+    setRequestedPlace(`${districtWatersheds[districtInput].label}, Bihar`);
+    setSelectedDistrict(districtInput);
+    setSelectedArea(null);
+    setActiveMetric(null);
+    setLevel("patna");
+    setIntroPhase("ready");
   }
 
   useEffect(() => {
     return () => introTimersRef.current.forEach(clearTimeout);
   }, []);
 
+  useEffect(() => () => {
+    if (uploadedImagePreview) URL.revokeObjectURL(uploadedImagePreview);
+  }, [uploadedImagePreview]);
+
+  function handleImageUpload(event) {
+    const image = event.target.files?.[0];
+    if (!image) return;
+    if (!image.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      event.target.value = "";
+      return;
+    }
+    setUploadedImagePreview(URL.createObjectURL(image));
+    setUploadedImageName(image.name);
+  }
+
   function selectWatershed(area) {
     setSelectedArea(area);
     setActiveMetric(null);
-    setActiveTheme("none");
+  }
 
-    // Keep the selected watershed zoomed on the map, but return to the
-    // normal dashboard workspace so Analysis, 2D/3D Visualization,
-    // Thematic Maps and GIS Layers are visible below/alongside the map.
-    setShowContours(true);
-    setShowPonds(true);
-    setShowDrainage(true);
-    setShowVegetation(true);
-    setShowCheckDams(true);
-    setShowWaterBodies(true);
+  function openTerrainViewer() {
+    setTerrainZoom(1);
+    setShowTerrain(true);
+  }
 
-    // IMPORTANT:
-    // Do not keep fullscreen map-only mode after selecting a watershed.
-    // The current code already contains the analysis/visualization sections;
-    // mapOnly=true was simply hiding them.
-    setMapOnly(false);
-    setSidebarOpen(true);
+  function open2dViewer() {
+    setMapZoom(1);
+    setShow2dViewer(true);
   }
 
   function goBack() {
     introTimersRef.current.forEach(clearTimeout);
     introTimersRef.current = [];
     setShowTerrain(false);
+    setShow2dViewer(false);
     setActiveMetric(null);
     setSelectedArea(null);
-    setActiveTheme("none");
-    setMapOnly(false);
-    setSidebarOpen(true);
+    setSelectedDistrict(null);
+    setSidebarOpen(false);
+    setStateName("");
+    setDistrictName("");
+    setUploadedImagePreview("");
+    setUploadedImageName("");
     setLevel("india");
     setIntroPhase("idle");
     setStarted(false);
@@ -595,23 +595,6 @@ function App() {
             style={{ borderRadius: "8%", border: "4px solid #5f0d0d" }}
           />
         </div>
-
-        {/* <header className="landing-header">
-
-          <div className="brand">
-            <img
-              src="/panchtattva-logo.png"
-              alt="PanchTattva"
-              className="brand-logo"
-            />
-          </div>
-
-          <div className="landing-status">
-            <span className="status-dot" />
-            GIS Decision Support System
-          </div>
-
-        </header> */}
 
         <div className="hero-row">
 
@@ -650,14 +633,6 @@ function App() {
 
             <div className="hero-content">
 
-              {/* <div className="hero-logo-wrap">
-                <img
-                  src="/panchtattva-logo.png"
-                  alt="PanchTattva Mapping Monitoring Managing Sustaining"
-                  className="hero-logo"
-                />
-              </div> */}
-
               <span className="hero-kicker">
                 GEOSPATIAL • SATELLITE • TERRAIN • WATER
               </span>
@@ -678,27 +653,65 @@ function App() {
 
                   <span className="search-icon">⌖</span>
 
-                  <input
-                    type="text"
-                    value={stateName}
-                    onChange={(e) => setStateName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") startExploration();
-                    }}
-                    placeholder="Enter state name, e.g. Bihar"
-                    aria-label="State name"
-                  />
+                  <label className="location-search-field">
+                    <span>State</span>
+                    <input
+                      type="text"
+                      value={stateName}
+                      onChange={(e) => setStateName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") startExploration();
+                      }}
+                      placeholder="e.g. Bihar"
+                      aria-label="State name"
+                    />
+                  </label>
+
+                  <label className="location-search-field">
+                    <span>District / Panchayat</span>
+                    <input
+                      type="text"
+                      value={districtName}
+                      onChange={(e) => setDistrictName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") startExploration();
+                      }}
+                      placeholder="e.g. Banka"
+                      aria-label="District or panchayat name"
+                    />
+                  </label>
 
                   <button onClick={startExploration}>
                     Explore <span>→</span>
                   </button>
 
                 </div>
+
+                <div className="image-upload-entry">
+                  <span className="image-upload-divider">or</span>
+                  <div className="image-upload-content">
+                    <label className="image-upload-control">
+                      <span>Upload image</span>
+                      <b>{uploadedImageName || "Choose one image"}</b>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        aria-label="Upload one watershed image"
+                      />
+                    </label>
+                    {uploadedImagePreview && (
+                      <div className="image-upload-preview">
+                        <img src={uploadedImagePreview} alt="Uploaded watershed preview" />
+                        <span title={uploadedImageName}>{uploadedImageName}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <small className="search-hint">
-                Demonstration coverage:
-                <b> Bihar</b>
+                Demonstration coverage: <b>Bihar</b> - Banka (High & Medium) or Khatangi, Gaya, and Jota (Low). Uploading one image opens Low Priority directly.
               </small>
 
             </div>
@@ -889,26 +902,26 @@ function App() {
             </span>
 
             <h1>
-              {introPhase === "globe" && "Scanning Earth"}
+              {introPhase === "globe" && "Scanning India"}
               {introPhase === "bihar" && "Locating Bihar"}
-              {introPhase === "patna" && "Zooming into watershed areas"}
+              {introPhase === "patna" && `Zooming into ${requestedPlace}`}
             </h1>
 
             <p>
               {introPhase === "globe" &&
                 "Rotating Earth • preparing the satellite journey."}
               {introPhase === "bihar" &&
-                `Target identified: ${requestedPlace}. Moving into the Bihar watershed region.`}
+                `State identified: Bihar. Moving toward ${requestedPlace}.`}
               {introPhase === "patna" &&
-                "Synchronizing satellite imagery with Patna rural watershed zones."}
+                `Displaying only the watershed priority zones mapped for ${requestedPlace}.`}
             </p>
 
             <div className="cinematic-location">
               <span className="location-pulse" />
               <b>
-                {introPhase === "globe" && "EARTH"}
+                {introPhase === "globe" && "INDIA"}
                 {introPhase === "bihar" && "BIHAR, INDIA"}
-                {introPhase === "patna" && "PATNA, BIHAR"}
+                {introPhase === "patna" && requestedPlace.toUpperCase()}
               </b>
             </div>
 
@@ -916,58 +929,43 @@ function App() {
               <span className={introPhase === "globe" ? "active" : ""} />
               <span className={introPhase === "bihar" ? "active" : ""} />
               <span className={introPhase === "patna" ? "active" : ""} />
-              <span />
             </div>
           </div>
         </div>
       )}
 
-      <div className={`dashboard-actions ${mapOnly ? "map-only-actions" : ""}`}>
-        {!mapOnly && (
-          <img
-            className="dashboard-brand"
-            src="/panchtattva-logo.png"
-            alt="PanchTattva"
+      <div className="dashboard-actions">
+        <button className="back-button" onClick={goBack}>
+          ← Back
+        </button>
+        <form
+          className="dashboard-search"
+          onSubmit={(event) => {
+            event.preventDefault();
+            searchDashboard();
+          }}
+        >
+          <span className="dashboard-search-icon">⌖</span>
+          <input
+            type="text"
+            value={dashboardSearch}
+            onChange={(event) => setDashboardSearch(event.target.value)}
+            placeholder="Search district or panchayat"
+            aria-label="Search watershed location"
           />
-        )}
-        {!mapOnly && (
-          <>
-            {selectedArea && (() => {
-              const zone = priorityZones.find((item) => item.key === selectedArea);
-              return zone ? (
-                <div className="selected-area-meta">
-                  <div className="selected-area-meta-item">
-                    <span className="selected-area-meta-label">Latitude</span>
-                    <b>{zone.center[0].toFixed(6)}</b>
-                  </div>
-                  <div className="selected-area-meta-item">
-                    <span className="selected-area-meta-label">Longitude</span>
-                    <b>{zone.center[1].toFixed(6)}</b>
-                  </div>
-                  <div className="selected-area-meta-item">
-                    <span className="selected-area-meta-label">Made in year</span>
-                    <b>{zone.createdYear}</b>
-                  </div>
-                </div>
-              ) : null;
-            })()}
-            <button className="back-button" onClick={goBack}>
-              ← Back
-            </button>
-          </>
-        )}
+          <button type="submit">Search</button>
+        </form>
+        <img
+          className="dashboard-brand"
+          src="/panchtattva-logo.png"
+          alt="PanchTattva"
+        />
 
       </div>
 
-      {mapOnly && level === "patna" && (
-        <button className="map-only-back" onClick={goBack}>
-          ← Back
-        </button>
-      )}
+      <div className="workspace">
 
-      <div className={`workspace ${mapOnly ? "map-only-workspace" : ""}`}>
-
-        <aside className={`sidebar ${sidebarOpen ? "open" : ""} ${mapOnly ? "map-only-sidebar" : ""}`}>
+        <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
 
           <div className="sidebar-heading">
 
@@ -1012,110 +1010,37 @@ function App() {
 
           </div>
 
-          {level === "patna" && selectedData && (
-            <>
-              <div className="sidebar-section">
-
-                <label>THEMATIC MAPS</label>
-
-                {[
-                  ["rainfall", "Rainfall", "≈"],
-                  ["ndvi", "NDVI / Vegetation", "◈"],
-                  ["slope", "Slope", "△"],
-                  ["erosion", "Erosion Risk", "!"],
-                ].map(([key, label, icon]) => (
-                  <button
-                    key={key}
-                    className={`layer-button ${activeTheme === key ? "active" : ""
-                      }`}
-                    onClick={() =>
-                      setActiveTheme(
-                        activeTheme === key ? "none" : key
-                      )
-                    }
-                  >
-                    <span className="layer-icon">{icon}</span>
-                    {label}
-                    {activeTheme === key && <b>✓</b>}
-                  </button>
-                ))}
-
+          {selectedZone && (
+            <section className="sidebar-watershed-card">
+              <span className="sidebar-watershed-card-title">Selected Watershed</span>
+              <div className="sidebar-watershed-meta-grid">
+                <div className="sidebar-watershed-meta-item">
+                  <span>Latitude</span>
+                  <b>{selectedZone.center[0].toFixed(6)}</b>
+                </div>
+                <div className="sidebar-watershed-meta-item">
+                  <span>Longitude</span>
+                  <b>{selectedZone.center[1].toFixed(6)}</b>
+                </div>
+                <div className="sidebar-watershed-meta-item">
+                  <span>Made in year</span>
+                  <b>{selectedZone.createdYear}</b>
+                </div>
               </div>
-
-              <div className="sidebar-section">
-
-                <label>GIS LAYERS</label>
-
-                {[
-                  ["Contours", showContours, setShowContours, "⌁"],
-                  ["Ponds", showPonds, setShowPonds, "○"],
-                  ["Water Bodies", showWaterBodies, setShowWaterBodies, "≈"],
-                  ["Drainage", showDrainage, setShowDrainage, "╱"],
-                  ["Vegetation", showVegetation, setShowVegetation, "●"],
-                  ["Proposed Check Dams", showCheckDams, setShowCheckDams, "▰"],
-                ].map(([label, checked, setter, icon]) => (
-                  <label className="toggle-row" key={label}>
-
-                    <span>
-                      <i>{icon}</i>
-                      {label}
-                    </span>
-
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => setter(!checked)}
-                    />
-
-                  </label>
-                ))}
-
-              </div>
-            </>
+            </section>
           )}
 
-          <div className="sidebar-footer">
-
-            <div className="coverage-card">
-              <span>●</span>
-              <div>
-                <b>Coverage</b>
-                <small>Bihar demonstration area</small>
-              </div>
-            </div>
-
-          </div>
 
         </aside>
 
-        <main className={`content ${mapOnly ? "map-only-content" : ""}`}>
+        <main className="content">
 
           <section className="map-section">
-
-            {mapOnly && level === "patna" && (
-              <div className="map-only-base-controls">
-                <span className="map-control-title">MAP VIEW</span>
-                {[
-                  ["satellite", "Satellite"],
-                  ["hybrid", "Hybrid"],
-                  ["terrain", "Terrain"],
-                  ["street", "Street"],
-                ].map(([key, label]) => (
-                  <button
-                    key={key}
-                    className={baseMap === key ? "active" : ""}
-                    onClick={() => setBaseMap(key)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
 
             <div className="section-heading">
 
               <div className="map-heading-group">
-                {!sidebarOpen && !mapOnly && (
+                {!sidebarOpen && (
                   <button
                     className="open-sidebar-button map-heading-sidebar-button"
                     onClick={() => setSidebarOpen(true)}
@@ -1143,29 +1068,11 @@ function App() {
                 level={level}
                 cinematic={introPhase !== "idle"}
                 baseMap={baseMap}
-                activeTheme={activeTheme}
                 selectedArea={selectedArea}
                 onSelectArea={selectWatershed}
                 onLevelChange={setLevel}
-                showContours={showContours}
-                showPonds={showPonds}
-                showDrainage={showDrainage}
-                showVegetation={showVegetation}
-                showCheckDams={showCheckDams}
-                showWaterBodies={showWaterBodies}
-                priorityZones={priorityZones}
-                thematicZones={thematicZones}
-                vegetationPoints={vegetationPoints}
-                getThemeStyle={getThemeStyle}
-                mapOnly={mapOnly}
+                priorityZones={visiblePriorityZones}
               />
-
-              {mapOnly && selectedArea && (
-                <div className={`priority-map-note priority-${selectedArea}`}>
-                  <strong>{selectedArea.toUpperCase()} PRIORITY AREA</strong>
-                  <span>Priority colour hidden · GIS layers are now visible</span>
-                </div>
-              )}
 
               <div className="map-overlay-badge">
                 <span className="pulse-dot" />
@@ -1187,15 +1094,12 @@ function App() {
                 {introPhase === "ready" && level === "patna" &&
                   !selectedArea &&
                   `Showing ${requestedPlace} → watershed priority areas`}
-                {selectedArea &&
-                  `${selectedArea.toUpperCase()} PRIORITY AREA · Priority colour cleared · GIS layers are now visible`}
               </div>
 
             </div>
 
           </section>
 
-          {/* <section className="analysis-section"> */}
           <section className="visualization-section">
             <div className="section-heading compact">
               <div>
@@ -1204,7 +1108,7 @@ function App() {
               
               {selectedData && (
                 <span className={`priority-badge ${selectedArea}`}>
-                  {selectedArea.toUpperCase()} PRIORITY
+                  {selectedZone.label.toUpperCase()} PRIORITY
                 </span>
               )}
             </div>
@@ -1229,7 +1133,7 @@ function App() {
 
                     <div>
                       <h3>{selectedData.name}</h3>
-                      <p>Patna District • Rural Watershed Zone</p>
+                      <p>{districtWatersheds[selectedDistrict]?.label} District • Rural Watershed Zone</p>
                     </div>
 
                     <div className="score-ring">
@@ -1264,31 +1168,51 @@ function App() {
 
                 </div>
 
-                <div className="analysis-card conditions">
+                  <div className="analysis-card conditions">
 
-                  <span className="card-label">
+                    <span className="card-label">
                     CURRENT CONDITIONS
-                  </span>
+                    </span>
 
-                  <div className="condition-item">
-                    <span>Annual Rainfall</span>
-                    <b>{Number(selectedData.rainfall).toFixed(3)} mm</b>
-                  </div>
-
-                  <div className="condition-item">
-                    <span>Erosion Risk</span>
-                    <b>{selectedData.erosion}</b>
-                  </div>
-
-                  <div className="condition-item">
-                    <span>Surface Runoff Potential</span>
-                    <b>{selectedData.runoff}</b>
-                  </div>
-
-                  <div className="condition-item">
-                    <span>Monsoon/Q3 Rainfall</span>
-                    <b>{selectedData.monsoonRainfall} mm</b>
-                  </div>
+                  {isLowPriority ? (
+                    <>
+                      <div className="condition-item">
+                        <span>Annual Rainfall</span>
+                        <b>{Number(selectedData.rainfall).toFixed(3)} mm</b>
+                      </div>
+                      <div className="condition-item">
+                        <span>NDVI</span>
+                        <b>{Number(selectedData.ndvi).toFixed(3)}</b>
+                      </div>
+                      <div className="condition-item">
+                        <span>Average Slope</span>
+                        <b>{Number(selectedData.slope).toFixed(3)}°</b>
+                      </div>
+                      <div className="condition-item">
+                        <span>Elevation</span>
+                        <b>{Number(selectedData.elevation).toFixed(3)} m</b>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="condition-item">
+                        <span>Annual Rainfall</span>
+                        <b>{Number(selectedData.rainfall).toFixed(3)} mm</b>
+                      </div>
+                      <div className="condition-item">
+                        <span>Erosion Risk</span>
+                        <b>{selectedData.erosion}</b>
+                      </div>
+                      <div className="condition-item">
+                        <span>Surface Runoff Potential</span>
+                        <b>{selectedData.runoff}</b>
+                      </div>
+                      <div className="condition-item">
+                        <span>Monsoon/Q3 Rainfall</span>
+                        <b>{selectedData.monsoonRainfall} mm</b>
+                      </div>
+                    </>
+                  )}
 
                 </div>
 
@@ -1306,29 +1230,6 @@ function App() {
 
                 </div>
 
-                {/* <div className="analysis-card resources-card">
-
-                  <span className="card-label">
-                    WATER RESOURCES
-                  </span>
-
-                  <div className="resource-stats">
-                    <div>
-                      <b>{selectedData.ponds}</b>
-                      <span>Ponds</span>
-                    </div>
-                    <div>
-                      <b>{selectedData.waterBodies}</b>
-                      <span>Water Bodies</span>
-                    </div>
-                    <div>
-                      <b>{selectedData.checkDams}</b>
-                      <span>Check Dams</span>
-                    </div>
-                  </div>
-
-                </div> */}
-
               </div>
             )}
           </section>
@@ -1336,7 +1237,6 @@ function App() {
           <section className="summary-section">
             <div className="summary-card">
               <span className="card-label">SUMMARY</span>
-              {/* <b className="summary-priority">&gt; {selectedArea ? `${selectedArea.toUpperCase()} PRIORITY` : "SELECT A WATERSHED"}</b> */}
               <p>
                 {selectedData
                   ? selectedData.recommendation
@@ -1351,15 +1251,6 @@ function App() {
                 <h2>Visualization for watershed development</h2>
               </div>
 
-              {selectedData && (
-                <button
-                  className="terrain-action"
-                  onClick={() => setShowTerrain(true)}
-                >
-                  Open detailed 3D analysis →
-                </button>
-              )}
-
             </div>
 
             <div className="visual-grid">
@@ -1370,15 +1261,22 @@ function App() {
                   <div>
                     <h3>2D Visualization</h3>
                   </div>
-                  <span>GIS LAYERS</span>
                 </div>
 
                 {selectedData ? (
-                  <div className="visual-2d">
-                    <img
-                      src={watershed2dImages[selectedArea]}
-                      alt={`${selectedArea} priority watershed 2D visualization`}
-                    />
+                  <div className="visual-clickable">
+                    <div className="visual-2d">
+                      <img
+                        src={watershed2dImages[selectedArea]}
+                        alt={`${selectedArea} priority watershed 2D visualization`}
+                      />
+                    </div>
+                    <button
+                      className="visual-open-button"
+                      onClick={open2dViewer}
+                    >
+                      View 2D Terrain
+                    </button>
                   </div>
                 ) : (
                   <div className="visual-placeholder">
@@ -1394,17 +1292,21 @@ function App() {
                   <div>
                     <h3>3D Visualization</h3>
                   </div>
-                  <span>DEM TERRAIN</span>
                 </div>
 
                 {selectedData ? (
                   <div className="visual-clickable">
-                    <MiniTerrain data={selectedData} />
+                    <div className="visual-3d">
+                      <img
+                        src={watershed3dImages[selectedArea]}
+                        alt={`${selectedArea} priority watershed 3D visualization`}
+                      />
+                    </div>
                     <button
                       className="visual-open-button"
-                      onClick={() => setShowTerrain(true)}
+                      onClick={openTerrainViewer}
                     >
-                      Explore 3D terrain
+                      View 3D Terrain
                     </button>
                   </div>
                 ) : (
@@ -1441,17 +1343,36 @@ function App() {
 
             <div className="terrain-modal-header">
               <div>
-                <span className="section-kicker">
-                  DIGITAL ELEVATION MODEL
-                </span>
                 <h2>3D Watershed Terrain</h2>
-                <p>
-                  {selectedData.name} • Patna, Bihar
-                </p>
               </div>
             </div>
 
-            <MiniTerrain data={selectedData} />
+            <div className="terrain-image-viewer">
+              <img
+                src={watershed3dImages[selectedArea]}
+                alt={`${selectedArea} priority watershed 3D terrain`}
+                style={{ transform: `scale(${terrainZoom})` }}
+              />
+              <div className="terrain-zoom-controls" aria-label="Image zoom controls">
+                <button
+                  type="button"
+                  onClick={() => setTerrainZoom((zoom) => Math.max(1, zoom - 0.25))}
+                  aria-label="Zoom out"
+                  disabled={terrainZoom <= 1}
+                >
+                  −
+                </button>
+                <span>{Math.round(terrainZoom * 100)}%</span>
+                <button
+                  type="button"
+                  onClick={() => setTerrainZoom((zoom) => Math.min(3, zoom + 0.25))}
+                  aria-label="Zoom in"
+                  disabled={terrainZoom >= 3}
+                >
+                  +
+                </button>
+              </div>
+            </div>
 
             <div className="terrain-stats">
               <div>
@@ -1476,6 +1397,59 @@ function App() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {show2dViewer && selectedData && (
+        <div
+          className="terrain-overlay"
+          onClick={() => setShow2dViewer(false)}
+        >
+          <div
+            className="terrain-modal terrain-modal-shell"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="terrain-close"
+              onClick={() => setShow2dViewer(false)}
+              aria-label="Close 2D map viewer"
+            >
+              ×
+            </button>
+
+            <div className="terrain-modal-header">
+              <div>
+                <h2>2D Watershed Map</h2>
+              </div>
+            </div>
+
+            <div className="terrain-image-viewer">
+              <img
+                src={watershed2dImages[selectedArea]}
+                alt={`${selectedArea} priority watershed 2D map`}
+                style={{ transform: `scale(${mapZoom})` }}
+              />
+              <div className="terrain-zoom-controls" aria-label="Map zoom controls">
+                <button
+                  type="button"
+                  onClick={() => setMapZoom((zoom) => Math.max(1, zoom - 0.25))}
+                  aria-label="Zoom out"
+                  disabled={mapZoom <= 1}
+                >
+                  −
+                </button>
+                <span>{Math.round(mapZoom * 100)}%</span>
+                <button
+                  type="button"
+                  onClick={() => setMapZoom((zoom) => Math.min(3, zoom + 0.25))}
+                  aria-label="Zoom in"
+                  disabled={mapZoom >= 3}
+                >
+                  +
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

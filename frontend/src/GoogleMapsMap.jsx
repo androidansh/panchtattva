@@ -29,7 +29,19 @@ function GoogleMapsMap({
   const [scriptTimedOut, setScriptTimedOut] = useState(false);
   const [zoom, setZoom] = useState(5);
   const [resolution, setResolution] = useState(0);
-  const currentView = views[level];
+  const currentView = useMemo(() => {
+    if (level === "patna" && priorityZones.length > 0) {
+      const center = priorityZones.reduce(
+        (total, zone) => ({
+          lat: total.lat + zone.center[0] / priorityZones.length,
+          lng: total.lng + zone.center[1] / priorityZones.length,
+        }),
+        { lat: 0, lng: 0 }
+      );
+      return { center, zoom: priorityZones.length === 1 ? 12 : 10 };
+    }
+    return views[level];
+  }, [level, priorityZones]);
   const { isLoaded, loadError } = useJsApiLoader({
     id: "panch-tattva-google-maps-script",
     googleMapsApiKey: googleKey,
